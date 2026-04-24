@@ -8,11 +8,13 @@ export class UnitBase {
 
     this.hasMoved = false;
     this.hasAttacked = false;
+    this.hasRotated = false;
   }
 
   resetTurn() {
     this.hasMoved = false;
     this.hasAttacked = false;
+    this.hasRotated = false;
   }
 
   moveTo(x, y) {
@@ -20,6 +22,13 @@ export class UnitBase {
     this.x = x;
     this.y = y;
     this.hasMoved = true;
+    return true;
+  }
+
+  rotate(newFacing) {
+    if (this.hasRotated) return false;
+    this.facing = newFacing;
+    this.hasRotated = true;
     return true;
   }
 }
