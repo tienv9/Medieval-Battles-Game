@@ -6,22 +6,23 @@ export class UnitBase {
     this.y = y;
     this.facing = facing;
 
-    this.hasMoved = false;
     this.hasAttacked = false;
     this.hasRotated = false;
+    this.moveLeft = 0;
   }
 
   resetTurn() {
-    this.hasMoved = false;
     this.hasAttacked = false;
     this.hasRotated = false;
+    this.moveLeft = this.stats.move;
   }
 
-  moveTo(x, y) {
-    if (this.hasMoved) return false;
+  moveTo(x, y, cost = 1) {
+    if (this.moveLeft < cost) return false;
+
     this.x = x;
     this.y = y;
-    this.hasMoved = true;
+    this.moveLeft -= cost;
     return true;
   }
 

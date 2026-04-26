@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Board from "./ui/Board";
 import { Unit } from "./engine/Unit";
 
-  const createUnits = () => {
+const createUnits = () => {
   const units = [];
   let id = 0;
 
@@ -10,8 +10,27 @@ import { Unit } from "./engine/Unit";
     const types = ["swordsman", "spearman", "archer", "cavalry"];
     const type = types[i % 4];
 
-    units.push(new Unit({ id: id++, owner: 0, type, x: i % 8, y: 8 + Math.floor(i / 8), facing: "N" }));
-    units.push(new Unit({ id: id++, owner: 1, type, x: i % 8, y: Math.floor(i / 8), facing: "S" }));
+    units.push(
+      new Unit({
+        id: id++,
+        owner: 0,
+        type,
+        x: i % 8,
+        y: 8 + Math.floor(i / 8),
+        facing: "N",
+      })
+    );
+
+    units.push(
+      new Unit({
+        id: id++,
+        owner: 1,
+        type,
+        x: i % 8,
+        y: Math.floor(i / 8),
+        facing: "S",
+      })
+    );
   }
 
   return units;
@@ -33,14 +52,14 @@ export default function App() {
   const canMove = (unit, x, y) => {
     const dx = Math.abs(unit.x - x);
     const dy = Math.abs(unit.y - y);
-    return dx + dy <= unit.stats.move && !getUnit(x, y);
+    const dist = dx + dy;
+
+    return dist <= unit.moveLeft && !getUnit(x, y);
   };
 
   const handleRotate = (unit) => {
     const success = unit.rotate(unit.facing);
-    if (success) {
-      setUnits([...units]);
-    }
+    if (success) setUnits([...units]);
   };
 
   const handleClick = (x, y) => {
@@ -63,9 +82,12 @@ export default function App() {
       }
 
       if (!unit && canMove(sel, x, y)) {
-        sel.moveTo(x, y);
+        const dx = Math.abs(sel.x - x);
+        const dy = Math.abs(sel.y - y);
+        const cost = dx + dy;
+
+        sel.moveTo(x, y, cost);
         setUnits([...units]);
-        setSelected(null);
       }
     } else if (unit && unit.owner === currentPlayer) {
       setSelected(unit.id);

@@ -7,10 +7,11 @@ export class Unit extends UnitBase {
 
     this.type = type;
     this.stats = UNIT_TYPES[type];
+    this.moveLeft = this.stats.move;
   }
 
   canMove(distance) {
-    return !this.hasMoved && distance <= this.stats.move;
+    return distance <= this.moveLeft;
   }
 
   canAttack() {

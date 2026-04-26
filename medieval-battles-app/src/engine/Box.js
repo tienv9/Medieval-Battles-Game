@@ -12,15 +12,21 @@ const iconMap = {
   cavalry: horse,
 };
 
-export default function Box({ unit, currentPlayer, onClick, onRotate }) {
+export default function Box({
+  unit,
+  currentPlayer,
+  onClick,
+  onRotate,
+  isMoveTarget
+}) {
   const getColor = () => {
     if (!unit) return "white";
 
     if (unit.owner !== currentPlayer) return "white";
 
-    if (!unit.hasMoved) return "#4ade80"; // green
-    if (unit.hasMoved && !unit.hasRotated) return "#facc15"; // yellow
-    if (unit.hasMoved && unit.hasRotated) return "#9ca3af"; // gray
+    if (unit.moveLeft > 0) return "#4ade80"; // green
+    if (unit.moveLeft === 0 && !unit.hasRotated) return "#facc15"; // yellow
+    if (unit.moveLeft === 0 && unit.hasRotated) return "#9ca3af"; // gray
 
     return "white";
   };
@@ -41,8 +47,20 @@ export default function Box({ unit, currentPlayer, onClick, onRotate }) {
         alignItems: "center",
         justifyContent: "center",
         cursor: "pointer",
+        position: "relative",
       }}
     >
+      {isMoveTarget && (
+        <div
+          style={{
+            width: 10,
+            height: 10,
+            backgroundColor: "green",
+            borderRadius: "50%",
+            position: "absolute",
+          }}
+        />
+      )}
       {unit && (
         <img
           src={iconMap[unit.type]}
