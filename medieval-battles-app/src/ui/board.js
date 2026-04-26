@@ -7,16 +7,16 @@ export default function Board({
   units,
   selected,
   currentPlayer,
-  onCellClick,
-  onRotate
+  attackMode,
+  onCellClick
 }) {
   const getUnit = (x, y) => units.find(u => u.x === x && u.y === y);
 
-  const getValidMoves = () => {
-    if (!selected) return [];
+  const getSelectedUnit = () => units.find(u => u.id === selected);
 
-    const sel = units.find(u => u.id === selected);
-    if (!sel) return [];
+  const getValidMoves = () => {
+    const sel = getSelectedUnit();
+    if (!sel || attackMode) return [];
 
     const moves = [];
 
@@ -35,7 +35,29 @@ export default function Board({
     return moves;
   };
 
+  const getAttackTiles = () => {
+    const sel = getSelectedUnit();
+    if (!sel || !attackMode) return [];
+
+    const tiles = [];
+
+    for (let x = 0; x < SIZE; x++) {
+      for (let y = 0; y < SIZE; y++) {
+        const dx = Math.abs(sel.x - x);
+        const dy = Math.abs(sel.y - y);
+        const dist = dx + dy;
+
+        if (dist > 0 && dist <= sel.stats.range) {
+          tiles.push({ x, y });
+        }
+      }
+    }
+
+    return tiles;
+  };
+
   const validMoves = getValidMoves();
+  const attackTiles = getAttackTiles();
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: `repeat(${SIZE}, 40px)` }}>
@@ -49,8 +71,8 @@ export default function Board({
               unit={unit}
               currentPlayer={currentPlayer}
               isMoveTarget={validMoves.some(m => m.x === x && m.y === y)}
+              isAttackTarget={attackTiles.some(t => t.x === x && t.y === y)}
               onClick={() => onCellClick(x, y)}
-              onRotate={(u) => onRotate(u)}
             />
           );
         })
