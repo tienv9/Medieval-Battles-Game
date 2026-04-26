@@ -149,6 +149,32 @@ export default function App() {
           Attack
         </button>
 
+        <br />
+        <br />
+
+        <button
+          disabled={
+            selected === null ||
+            (() => {
+              const u = units.find((u) => u.id === selected);
+              return !u || (u.moveLeft === 0 && u.hasAttacked);
+            })()
+          }
+          onClick={() => {
+            const unit = units.find((u) => u.id === selected);
+            if (!unit) return;
+
+            unit.moveLeft = 0;
+            unit.hasAttacked = true;
+
+            setAttackMode(false);
+            setSelected(null);
+            setUnits([...units]);
+          }}
+        >
+          End Unit Turn
+        </button>
+
         <p>
           Turn: {turn} | Player {currentPlayer}
         </p>
