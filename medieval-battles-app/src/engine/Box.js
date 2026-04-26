@@ -30,11 +30,9 @@ export default function Box({
     if (!unit) return "white";
     if (unit.owner !== currentPlayer) return "white";
 
-    if (unit.moveLeft > 0) return "#4ade80";
-    if (unit.moveLeft === 0 && !unit.hasRotated) return "#facc15";
-    if (unit.moveLeft === 0 && unit.hasRotated) return "#9ca3af";
-
-    return "white";
+    if (unit.moveLeft > 0) return "#4ade80"; 
+    if (!unit.hasAttacked) return "#facc15"; 
+    return "#9ca3af";
   };
 
   return (

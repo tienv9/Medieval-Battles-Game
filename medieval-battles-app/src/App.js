@@ -48,8 +48,8 @@ export default function App() {
     const unit = getUnit(x, y);
 
     if (attackMode) {
-      const sel = units.find(u => u.id === selected);
-      if (!sel) return;
+      const sel = units.find((u) => u.id === selected);
+      if (!sel || sel.hasAttacked) return;
 
       const dx = Math.abs(sel.x - x);
       const dy = Math.abs(sel.y - y);
@@ -61,13 +61,15 @@ export default function App() {
           const def = roll();
 
           if (atk > def) {
-            setUnits(prev => prev.filter(u => u.id !== unit.id));
+            setUnits((prev) => prev.filter((u) => u.id !== unit.id));
           }
         }
 
+        sel.attack();
         setAttackMode(false);
         setSelected(null);
       }
+
       return;
     }
 
@@ -109,12 +111,13 @@ export default function App() {
       <div>
         <button onClick={endTurn}>End Turn</button>
 
-        <br /><br />
+        <br />
+        <br />
 
         <button
           disabled={selected === null}
           onClick={() => {
-            const unit = units.find(u => u.id === selected);
+            const unit = units.find((u) => u.id === selected);
             if (!unit) return;
 
             const newFacing = rotateClockwise(unit.facing);
@@ -126,13 +129,17 @@ export default function App() {
           Rotate
         </button>
 
-        <br /><br />
+        <br />
+        <br />
 
         <button
-          disabled={selected === null}
+          disabled={
+            selected === null ||
+            units.find((u) => u.id === selected)?.hasAttacked
+          }
           onClick={() => {
-            const unit = units.find(u => u.id === selected);
-            if (!unit) return;
+            const unit = units.find((u) => u.id === selected);
+            if (!unit || unit.hasAttacked) return;
 
             unit.moveLeft = 0;
             setAttackMode(true);
@@ -142,7 +149,9 @@ export default function App() {
           Attack
         </button>
 
-        <p>Turn: {turn} | Player {currentPlayer}</p>
+        <p>
+          Turn: {turn} | Player {currentPlayer}
+        </p>
       </div>
     </div>
   );

@@ -7,13 +7,11 @@ export class UnitBase {
     this.facing = facing;
 
     this.hasAttacked = false;
-    this.hasRotated = false;
     this.moveLeft = 0;
   }
 
   resetTurn() {
     this.hasAttacked = false;
-    this.hasRotated = false;
     this.moveLeft = this.stats.move;
   }
 
@@ -27,9 +25,7 @@ export class UnitBase {
   }
 
   rotate(newFacing) {
-    if (this.hasRotated) return false;
     this.facing = newFacing;
-    this.hasRotated = true;
     return true;
   }
 }
