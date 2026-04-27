@@ -32,6 +32,7 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [turn, setTurn] = useState(0);
   const [attackMode, setAttackMode] = useState(false);
+  const [combatLog, setCombatLog] = useState([]);
 
   const currentPlayer = turn % 2;
 
@@ -48,30 +49,40 @@ export default function App() {
     const unit = getUnit(x, y);
 
     if (attackMode) {
-      const sel = units.find((u) => u.id === selected);
-      if (!sel || sel.hasAttacked) return;
+  const sel = units.find(u => u.id === selected);
+  if (!sel || sel.hasAttacked) return;
 
-      const dx = Math.abs(sel.x - x);
-      const dy = Math.abs(sel.y - y);
-      const dist = dx + dy;
+  const dx = Math.abs(sel.x - x);
+  const dy = Math.abs(sel.y - y);
+  const dist = dx + dy;
 
-      if (dist <= sel.stats.range) {
-        if (unit && unit.owner !== currentPlayer) {
-          const atk = roll();
-          const def = roll();
+  if (dist <= sel.stats.range) {
+    let logs = [];
 
-          if (atk > def) {
-            setUnits((prev) => prev.filter((u) => u.id !== unit.id));
-          }
-        }
+    if (unit && unit.owner !== currentPlayer) {
+      const atk = roll();
+      const def = roll();
 
-        sel.attack();
-        setAttackMode(false);
-        setSelected(null);
+      logs.push(`Your ${sel.type} roll a ${atk}`);
+      logs.push(`Enemy ${unit.type} roll a ${def}`);
+
+      if (atk > def) {
+        logs.push(`Your roll is higher. Enemy ${unit.type} dies`);
+        setUnits(prev => prev.filter(u => u.id !== unit.id));
+      } else {
+        logs.push(`Enemy defends successfully`);
       }
-
-      return;
     }
+
+    setCombatLog(logs);
+
+    sel.attack();
+    setAttackMode(false);
+    setSelected(null);
+  }
+
+  return;
+}
 
     if (selected !== null) {
       const sel = units.find(u => u.id === selected);
@@ -178,6 +189,30 @@ export default function App() {
         <p>
           Turn: {turn} | Player {currentPlayer}
         </p>
+      </div>
+      <div
+        style={{
+          position: "fixed",
+          bottom: 10,
+          right: 10,
+          width: 220,
+          minHeight: 80,
+          backgroundColor: "#111",
+          color: "white",
+          padding: 10,
+          borderRadius: 8,
+          fontSize: 12,
+          boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+        }}
+      >
+        <strong>Combat Log</strong>
+        <div style={{ marginTop: 5 }}>
+          {combatLog.length === 0 ? (
+            <div>No actions yet</div>
+          ) : (
+            combatLog.map((line, i) => <div key={i}>{line}</div>)
+          )}
+        </div>
       </div>
     </div>
   );
