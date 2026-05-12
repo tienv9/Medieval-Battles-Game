@@ -150,14 +150,25 @@ export default function App() {
           }
           onClick={() => {
             const unit = units.find((u) => u.id === selected);
+
             if (!unit || unit.hasAttacked) return;
 
-            unit.moveLeft = 0;
-            setAttackMode(true);
+            if (!attackMode) {
+              unit.savedMoveLeft = unit.moveLeft;
+
+              unit.moveLeft = 0;
+
+              setAttackMode(true);
+            } else {
+              unit.moveLeft = unit.savedMoveLeft ?? unit.moveLeft;
+
+              setAttackMode(false);
+            }
+
             setUnits([...units]);
           }}
         >
-          Attack
+          {attackMode ? "Cancel Attack" : "Attack"}
         </button>
 
         <br />
