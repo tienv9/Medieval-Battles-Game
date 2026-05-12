@@ -181,7 +181,7 @@ export default function App() {
             defBonus -= 6;
             logs.push(`Archer weakness! ${unit.type} gets -6 defense`);
           }
-          
+
           atk += atkBonus;
           def += defBonus;
 
@@ -259,7 +259,16 @@ export default function App() {
   };
 
   return (
-    <div style={{ display: "flex", gap: 20 }}>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "100vh",
+      width: "100vw",
+    }}
+  >
+    <div style={{ display: "flex", gap: 20, padding: 20 }}>
       <Board
         units={units}
         selected={selected}
@@ -306,17 +315,11 @@ export default function App() {
 
             // Toggle attack mode
             if (!attackMode) {
-              // Save remaining movement
               unit.savedMoveLeft = unit.moveLeft;
-
-              // Disable movement
               unit.moveLeft = 0;
-
               setAttackMode(true);
             } else {
-              // Restore movement
               unit.moveLeft = unit.savedMoveLeft ?? unit.moveLeft;
-
               setAttackMode(false);
             }
 
@@ -334,7 +337,6 @@ export default function App() {
             selected === null ||
             (() => {
               const u = units.find((u) => u.id === selected);
-
               return !u || (u.moveLeft === 0 && u.hasAttacked);
             })()
           }
@@ -386,5 +388,6 @@ export default function App() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

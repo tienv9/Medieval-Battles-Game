@@ -60,7 +60,19 @@ export default function Board({
   const attackTiles = getAttackTiles();
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: `repeat(${SIZE}, 40px)` }}>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${SIZE}, 40px)`,
+      }}
+    >
       {Array.from({ length: SIZE }).map((_, y) =>
         Array.from({ length: SIZE }).map((_, x) => {
           const unit = getUnit(x, y);
@@ -70,13 +82,18 @@ export default function Board({
               key={`${x}-${y}`}
               unit={unit}
               currentPlayer={currentPlayer}
-              isMoveTarget={validMoves.some(m => m.x === x && m.y === y)}
-              isAttackTarget={attackTiles.some(t => t.x === x && t.y === y)}
+              isMoveTarget={validMoves.some(
+                (m) => m.x === x && m.y === y
+              )}
+              isAttackTarget={attackTiles.some(
+                (t) => t.x === x && t.y === y
+              )}
               onClick={() => onCellClick(x, y)}
             />
           );
         })
       )}
     </div>
-  );
+  </div>
+);
 }
