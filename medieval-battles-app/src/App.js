@@ -10,8 +10,27 @@ const createUnits = () => {
     const types = ["swordsman", "spearman", "archer", "cavalry"];
     const type = types[i % 4];
 
-    units.push(new Unit({ id: id++, owner: 0, type, x: i % 8, y: 8 + Math.floor(i / 8), facing: "N" }));
-    units.push(new Unit({ id: id++, owner: 1, type, x: i % 8, y: Math.floor(i / 8), facing: "S" }));
+    units.push(
+      new Unit({
+        id: id++,
+        owner: 0,
+        type,
+        x: i % 8,
+        y: 8 + Math.floor(i / 8),
+        facing: "N",
+      }),
+    );
+
+    units.push(
+      new Unit({
+        id: id++,
+        owner: 1,
+        type,
+        x: i % 8,
+        y: Math.floor(i / 8),
+        facing: "S",
+      }),
+    );
   }
 
   return units;
@@ -27,6 +46,93 @@ const rotateClockwise = (facing) => {
   return order[(idx + 1) % 4];
 };
 
+const isBehindAttack = (attacker, defender) => {
+  switch (defender.facing) {
+    case "N":
+      return attacker.y > defender.y;
+
+    case "S":
+      return attacker.y < defender.y;
+
+    case "E":
+      return attacker.x < defender.x;
+
+    case "W":
+      return attacker.x > defender.x;
+
+    default:
+      return false;
+  }
+};
+
+const getCombatBonus = (unit, enemy) => {
+  // Spearman vs Cavalry
+  if (
+    unit.type === "spearman" &&
+    enemy.type === "cavalry"
+  ) {
+    return 2;
+  }
+
+  // Cavalry vs Spearman
+  if (
+    unit.type === "cavalry" &&
+    enemy.type === "spearman"
+  ) {
+    return -2;
+  }
+
+  // Swordsman vs Spearman
+  if (
+    unit.type === "swordsman" &&
+    enemy.type === "spearman"
+  ) {
+    return 2;
+  }
+
+  // Spearman vs Swordsman
+  if (
+    unit.type === "spearman" &&
+    enemy.type === "swordsman"
+  ) {
+    return -2;
+  }
+
+  // Swordsman vs Cavalry
+  if (
+    unit.type === "swordsman" &&
+    enemy.type === "cavalry"
+  ) {
+    return 1;
+  }
+
+  // Cavalry vs Swordsman
+  if (
+    unit.type === "cavalry" &&
+    enemy.type === "swordsman"
+  ) {
+    return -1;
+  }
+
+  // Swordsman vs Archer
+  if (
+    unit.type === "swordsman" &&
+    enemy.type === "archer"
+  ) {
+    return 1;
+  }
+
+  // Archer vs Swordsman
+  if (
+    unit.type === "archer" &&
+    enemy.type === "swordsman"
+  ) {
+    return -1;
+  }
+
+  return 0;
+};
+
 export default function App() {
   const [units, setUnits] = useState(createUnits());
   const [selected, setSelected] = useState(null);
@@ -36,56 +142,95 @@ export default function App() {
 
   const currentPlayer = turn % 2;
 
-  const getUnit = (x, y) => units.find(u => u.x === x && u.y === y);
+  const getUnit = (x, y) => units.find((u) => u.x === x && u.y === y);
 
   const canMove = (unit, x, y) => {
     const dx = Math.abs(unit.x - x);
     const dy = Math.abs(unit.y - y);
     const dist = dx + dy;
+
     return dist <= unit.moveLeft && !getUnit(x, y);
   };
 
   const handleClick = (x, y) => {
     const unit = getUnit(x, y);
 
+    // ATTACK MODE
     if (attackMode) {
-  const sel = units.find(u => u.id === selected);
-  if (!sel || sel.hasAttacked) return;
+      const sel = units.find((u) => u.id === selected);
 
-  const dx = Math.abs(sel.x - x);
-  const dy = Math.abs(sel.y - y);
-  const dist = dx + dy;
+      if (!sel || sel.hasAttacked) return;
 
-  if (dist <= sel.stats.range) {
-    let logs = [];
+      const dx = Math.abs(sel.x - x);
+      const dy = Math.abs(sel.y - y);
+      const dist = dx + dy;
 
-    if (unit && unit.owner !== currentPlayer) {
-      const atk = roll();
-      const def = roll();
+      if (dist <= sel.stats.range) {
+        let logs = [];
 
-      logs.push(`Your ${sel.type} roll a ${atk}`);
-      logs.push(`Enemy ${unit.type} roll a ${def}`);
+        if (unit && unit.owner !== currentPlayer) {
+          let atk = roll();
+          let def = roll();
 
-      if (atk > def) {
-        logs.push(`Your roll is higher. Enemy ${unit.type} dies`);
-        setUnits(prev => prev.filter(u => u.id !== unit.id));
-      } else {
-        logs.push(`Enemy defends successfully`);
+          // Type advantage
+          const atkBonus = getCombatBonus(sel, unit);
+          let defBonus = getCombatBonus(unit, sel);
+
+          // Archer defense weakness (except vs other archers)
+          if (unit.type === "archer" && sel.type !== "archer") {
+            defBonus -= 6;
+            logs.push(`Archer weakness! ${unit.type} gets -6 defense`);
+          }
+          
+          atk += atkBonus;
+          def += defBonus;
+
+          if (atkBonus !== 0) {
+            logs.push(
+              `${sel.type} combat modifier: ${atkBonus > 0 ? "+" : ""}${atkBonus}`,
+            );
+          }
+
+          if (defBonus !== 0) {
+            logs.push(
+              `${unit.type} combat modifier: ${defBonus > 0 ? "+" : ""}${defBonus}`,
+            );
+          }
+
+          // Back attack
+          if (isBehindAttack(sel, unit)) {
+            def -= 6;
+
+            logs.push(`Back attack! Enemy ${unit.type} gets -6 defense`);
+          }
+
+          logs.push(`Your ${sel.type} roll a ${atk}`);
+          logs.push(`Enemy ${unit.type} roll a ${def}`);
+
+          if (atk > def) {
+            logs.push(`Your roll is higher. Enemy ${unit.type} dies`);
+
+            setUnits((prev) => prev.filter((u) => u.id !== unit.id));
+          } else {
+            logs.push(`Enemy defends successfully`);
+          }
+        }
+
+        setCombatLog(logs);
+
+        sel.attack();
+
+        setAttackMode(false);
+        setSelected(null);
       }
+
+      return;
     }
 
-    setCombatLog(logs);
-
-    sel.attack();
-    setAttackMode(false);
-    setSelected(null);
-  }
-
-  return;
-}
-
+    // MOVEMENT
     if (selected !== null) {
-      const sel = units.find(u => u.id === selected);
+      const sel = units.find((u) => u.id === selected);
+
       if (!sel) return;
 
       if (!unit && canMove(sel, x, y)) {
@@ -94,6 +239,7 @@ export default function App() {
         const cost = dx + dy;
 
         sel.moveTo(x, y, cost);
+
         setUnits([...units]);
       }
     } else if (unit && unit.owner === currentPlayer) {
@@ -102,11 +248,14 @@ export default function App() {
   };
 
   const endTurn = () => {
-    units.forEach(u => u.resetTurn());
+    units.forEach((u) => u.resetTurn());
+
     setUnits([...units]);
+
     setSelected(null);
     setAttackMode(false);
-    setTurn(t => t + 1);
+
+    setTurn((t) => t + 1);
   };
 
   return (
@@ -129,9 +278,11 @@ export default function App() {
           disabled={selected === null}
           onClick={() => {
             const unit = units.find((u) => u.id === selected);
+
             if (!unit) return;
 
             const newFacing = rotateClockwise(unit.facing);
+
             if (unit.rotate(newFacing)) {
               setUnits([...units]);
             }
@@ -153,13 +304,17 @@ export default function App() {
 
             if (!unit || unit.hasAttacked) return;
 
+            // Toggle attack mode
             if (!attackMode) {
+              // Save remaining movement
               unit.savedMoveLeft = unit.moveLeft;
 
+              // Disable movement
               unit.moveLeft = 0;
 
               setAttackMode(true);
             } else {
+              // Restore movement
               unit.moveLeft = unit.savedMoveLeft ?? unit.moveLeft;
 
               setAttackMode(false);
@@ -179,11 +334,13 @@ export default function App() {
             selected === null ||
             (() => {
               const u = units.find((u) => u.id === selected);
+
               return !u || (u.moveLeft === 0 && u.hasAttacked);
             })()
           }
           onClick={() => {
             const unit = units.find((u) => u.id === selected);
+
             if (!unit) return;
 
             unit.moveLeft = 0;
@@ -191,6 +348,7 @@ export default function App() {
 
             setAttackMode(false);
             setSelected(null);
+
             setUnits([...units]);
           }}
         >
@@ -201,6 +359,7 @@ export default function App() {
           Turn: {turn} | Player {currentPlayer}
         </p>
       </div>
+
       <div
         style={{
           position: "fixed",
@@ -217,6 +376,7 @@ export default function App() {
         }}
       >
         <strong>Combat Log</strong>
+
         <div style={{ marginTop: 5 }}>
           {combatLog.length === 0 ? (
             <div>No actions yet</div>
