@@ -7,32 +7,60 @@ const createUnits = () => {
   const units = [];
   let id = 0;
 
-  for (let i = 0; i < 16; i++) {
-    const types = ["swordsman", "spearman", "archer", "cavalry"];
-    const type = types[i % 4];
+  const SIZE = 10;
 
-    units.push(
-      new Unit({
-        id: id++,
-        owner: 0,
-        type,
-        x: i % 8,
-        y: 8 + Math.floor(i / 8),
-        facing: "N",
-      }),
-    );
+  const grid = Array.from({ length: SIZE }, () =>
+    Array.from({ length: SIZE }, () => null)
+  );
 
-    units.push(
-      new Unit({
+  const row0 = [
+    "swordsman",
+    "swordsman",
+    "swordsman",
+    "swordsman",
+    "spearman",
+    "spearman",
+    "spearman",
+    "spearman",
+  ];
+
+  const row1 = [
+    "cavalry",
+    "cavalry",
+    "archer",
+    "archer",
+    "archer",
+    "archer",
+    "cavalry",
+    "cavalry",
+  ];
+
+  const placeRow = (row, y, owner, facing) => {
+    const startX = 1; // 1 empty square border
+
+    row.forEach((type, i) => {
+      const x = startX + i;
+
+      grid[y][x] = new Unit({
         id: id++,
-        owner: 1,
+        owner,
         type,
-        x: i % 8,
-        y: Math.floor(i / 8),
-        facing: "S",
-      }),
-    );
-  }
+        x,
+        y,
+        facing,
+      });
+
+      units.push(grid[y][x]);
+    });
+  };
+
+  // Player 0 (bottom side)
+  placeRow(row0, 8, 0, "N");
+  placeRow(row1, 9, 0, "N");
+
+  // Player 1 (top side mirrored)
+  placeRow(row1, 0, 1, "S");
+  placeRow(row0, 1, 1, "S");
 
   return units;
 };
