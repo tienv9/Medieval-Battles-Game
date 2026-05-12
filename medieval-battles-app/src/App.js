@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Board from "./ui/Board";
 import { Unit } from "./engine/Unit";
+import RulePopUp from "./engine/RulePopUp";
 
 const createUnits = () => {
   const units = [];
@@ -139,6 +140,7 @@ export default function App() {
   const [turn, setTurn] = useState(0);
   const [attackMode, setAttackMode] = useState(false);
   const [combatLog, setCombatLog] = useState([]);
+  const [showRules, setShowRules] = useState(false);
 
   const currentPlayer = turn % 2;
 
@@ -259,135 +261,154 @@ export default function App() {
   };
 
   return (
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "100vh",
-      width: "100vw",
-    }}
-  >
-    <div style={{ display: "flex", gap: 20, padding: 20 }}>
-      <Board
-        units={units}
-        selected={selected}
-        currentPlayer={currentPlayer}
-        attackMode={attackMode}
-        onCellClick={handleClick}
-      />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        width: "100vw",
+      }}
+    >
+      <div style={{ display: "flex", gap: 20, padding: 20 }}>
+        <Board
+          units={units}
+          selected={selected}
+          currentPlayer={currentPlayer}
+          attackMode={attackMode}
+          onCellClick={handleClick}
+        />
 
-      <div>
-        <button onClick={endTurn}>End Turn</button>
+        <div>
+          <button
+            onClick={() => setShowRules(true)}
+            style={{
+              position: "fixed",
+              top: 10,
+              right: 10,
+              padding: "8px 12px",
+              backgroundColor: "#facc15",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: "bold",
+              zIndex: 10000,
+            }}
+          >
+            Rules
+          </button>
 
-        <br />
-        <br />
+          <button onClick={endTurn}>End Turn</button>
 
-        <button
-          disabled={selected === null}
-          onClick={() => {
-            const unit = units.find((u) => u.id === selected);
+          <br />
+          <br />
 
-            if (!unit) return;
+          <button
+            disabled={selected === null}
+            onClick={() => {
+              const unit = units.find((u) => u.id === selected);
 
-            const newFacing = rotateClockwise(unit.facing);
+              if (!unit) return;
 
-            if (unit.rotate(newFacing)) {
+              const newFacing = rotateClockwise(unit.facing);
+
+              if (unit.rotate(newFacing)) {
+                setUnits([...units]);
+              }
+            }}
+          >
+            Rotate
+          </button>
+
+          <br />
+          <br />
+
+          <button
+            disabled={
+              selected === null ||
+              units.find((u) => u.id === selected)?.hasAttacked
+            }
+            onClick={() => {
+              const unit = units.find((u) => u.id === selected);
+
+              if (!unit || unit.hasAttacked) return;
+
+              // Toggle attack mode
+              if (!attackMode) {
+                unit.savedMoveLeft = unit.moveLeft;
+                unit.moveLeft = 0;
+                setAttackMode(true);
+              } else {
+                unit.moveLeft = unit.savedMoveLeft ?? unit.moveLeft;
+                setAttackMode(false);
+              }
+
               setUnits([...units]);
+            }}
+          >
+            {attackMode ? "Cancel Attack" : "Attack"}
+          </button>
+
+          <br />
+          <br />
+
+          <button
+            disabled={
+              selected === null ||
+              (() => {
+                const u = units.find((u) => u.id === selected);
+                return !u || (u.moveLeft === 0 && u.hasAttacked);
+              })()
             }
-          }}
-        >
-          Rotate
-        </button>
+            onClick={() => {
+              const unit = units.find((u) => u.id === selected);
 
-        <br />
-        <br />
+              if (!unit) return;
 
-        <button
-          disabled={
-            selected === null ||
-            units.find((u) => u.id === selected)?.hasAttacked
-          }
-          onClick={() => {
-            const unit = units.find((u) => u.id === selected);
-
-            if (!unit || unit.hasAttacked) return;
-
-            // Toggle attack mode
-            if (!attackMode) {
-              unit.savedMoveLeft = unit.moveLeft;
               unit.moveLeft = 0;
-              setAttackMode(true);
-            } else {
-              unit.moveLeft = unit.savedMoveLeft ?? unit.moveLeft;
+              unit.hasAttacked = true;
+
               setAttackMode(false);
-            }
+              setSelected(null);
 
-            setUnits([...units]);
+              setUnits([...units]);
+            }}
+          >
+            End Unit Turn
+          </button>
+
+          <p>
+            Turn: {turn} | Player {currentPlayer}
+          </p>
+        </div>
+
+        <div
+          style={{
+            position: "fixed",
+            bottom: 10,
+            right: 10,
+            width: 220,
+            minHeight: 80,
+            backgroundColor: "#111",
+            color: "white",
+            padding: 10,
+            borderRadius: 8,
+            fontSize: 12,
+            boxShadow: "0 0 10px rgba(0,0,0,0.5)",
           }}
         >
-          {attackMode ? "Cancel Attack" : "Attack"}
-        </button>
+          <strong>Combat Log</strong>
 
-        <br />
-        <br />
-
-        <button
-          disabled={
-            selected === null ||
-            (() => {
-              const u = units.find((u) => u.id === selected);
-              return !u || (u.moveLeft === 0 && u.hasAttacked);
-            })()
-          }
-          onClick={() => {
-            const unit = units.find((u) => u.id === selected);
-
-            if (!unit) return;
-
-            unit.moveLeft = 0;
-            unit.hasAttacked = true;
-
-            setAttackMode(false);
-            setSelected(null);
-
-            setUnits([...units]);
-          }}
-        >
-          End Unit Turn
-        </button>
-
-        <p>
-          Turn: {turn} | Player {currentPlayer}
-        </p>
-      </div>
-
-      <div
-        style={{
-          position: "fixed",
-          bottom: 10,
-          right: 10,
-          width: 220,
-          minHeight: 80,
-          backgroundColor: "#111",
-          color: "white",
-          padding: 10,
-          borderRadius: 8,
-          fontSize: 12,
-          boxShadow: "0 0 10px rgba(0,0,0,0.5)",
-        }}
-      >
-        <strong>Combat Log</strong>
-
-        <div style={{ marginTop: 5 }}>
-          {combatLog.length === 0 ? (
-            <div>No actions yet</div>
-          ) : (
-            combatLog.map((line, i) => <div key={i}>{line}</div>)
-          )}
+          <div style={{ marginTop: 5 }}>
+            {combatLog.length === 0 ? (
+              <div>No actions yet</div>
+            ) : (
+              combatLog.map((line, i) => <div key={i}>{line}</div>)
+            )}
+          </div>
         </div>
       </div>
+      <RulePopUp open={showRules} onClose={() => setShowRules(false)} />
     </div>
-  </div>
-);
+  );
 }
