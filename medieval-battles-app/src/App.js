@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Board from "./ui/Board";
+import Board from "./ui/board";
 import { Unit } from "./engine/Unit";
 import RulePopUp from "./engine/RulePopUp";
 import { getCombatBonus } from "./utils/CombatUtils";
