@@ -17,6 +17,9 @@ Two players command opposing medieval armies on a **10×10 grid**. Each player d
 
 Combat is **directional**, formations are critical, and flanking or rear attacks can instantly destroy units. Dice rolls introduce limited uncertainty, but tactical positioning and timing remain the primary determinants of victory.
 
+<img width="2407" height="1844" alt="tacticbattle" src="https://github.com/user-attachments/assets/0c6ff8cc-f6ed-4021-a1bb-05ecb9c7eeb5" />
+
+
 ---
 
 ## ⚔️ Core Mechanics
