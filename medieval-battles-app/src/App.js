@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Board from "./ui/Board";
+import Board from "./ui/GameBoard";
 import ControlPanel from "./ui/ControlPanel";
 import CombatLog from "./ui/CombatLog";
 import RulePopUp from "./ui/RulePopUp";
