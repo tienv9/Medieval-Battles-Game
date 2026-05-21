@@ -1,45 +1,60 @@
-// Place this file in src/utils/CombatUtils.js
+export const roll = () => Math.floor(Math.random() * 6) + 1;
 
 export const getCombatBonus = (unit, enemy) => {
-  // Spearman vs Cavalry
-  if (unit.type === 'spearman' && enemy.type === 'cavalry') {
-    return 2;
-  }
-
-  // Cavalry vs Spearman
-  if (unit.type === 'cavalry' && enemy.type === 'spearman') {
-    return -2;
-  }
-
-  // Swordsman vs Spearman
-  if (unit.type === 'swordsman' && enemy.type === 'spearman') {
-    return 2;
-  }
-
-  // Spearman vs Swordsman
-  if (unit.type === 'spearman' && enemy.type === 'swordsman') {
-    return -2;
-  }
-
-  // Swordsman vs Cavalry
-  if (unit.type === 'swordsman' && enemy.type === 'cavalry') {
-    return 1;
-  }
-
-  // Cavalry vs Swordsman
-  if (unit.type === 'cavalry' && enemy.type === 'swordsman') {
-    return -1;
-  }
-
-  // Swordsman vs Archer
-  if (unit.type === 'swordsman' && enemy.type === 'archer') {
-    return 1;
-  }
-
-  // Archer vs Swordsman
-  if (unit.type === 'archer' && enemy.type === 'swordsman') {
-    return -1;
-  }
-
+  if (unit.type === "spearman" && enemy.type === "cavalry") return 2;
+  if (unit.type === "cavalry" && enemy.type === "spearman") return -2;
+  if (unit.type === "swordsman" && enemy.type === "spearman") return 2;
+  if (unit.type === "spearman" && enemy.type === "swordsman") return -2;
+  if (unit.type === "swordsman" && enemy.type === "cavalry") return 1;
+  if (unit.type === "cavalry" && enemy.type === "swordsman") return -1;
+  if (unit.type === "swordsman" && enemy.type === "archer") return 1;
+  if (unit.type === "archer" && enemy.type === "swordsman") return -1;
   return 0;
-}
+};
+
+export const isBehindAttack = (attacker, defender) => {
+  switch (defender.facing) {
+    case "N": return attacker.y > defender.y;
+    case "S": return attacker.y < defender.y;
+    case "E": return attacker.x < defender.x;
+    case "W": return attacker.x > defender.x;
+    default:  return false;
+  }
+};
+
+export const resolveCombat = (attacker, defender) => {
+  const logs = [];
+  let atk = roll();
+  let def = roll();
+
+  const atkBonus = getCombatBonus(attacker, defender);
+  let defBonus = getCombatBonus(defender, attacker);
+
+  if (defender.type === "archer" && attacker.type !== "archer") {
+    defBonus -= 6;
+    logs.push(`Archer weakness! ${defender.type} gets -6 defense`);
+  }
+
+  atk += atkBonus;
+  def += defBonus;
+
+  if (atkBonus !== 0) {
+    logs.push(`${attacker.type} combat modifier: ${atkBonus > 0 ? "+" : ""}${atkBonus}`);
+  }
+  if (defBonus !== 0) {
+    logs.push(`${defender.type} combat modifier: ${defBonus > 0 ? "+" : ""}${defBonus}`);
+  }
+
+  if (isBehindAttack(attacker, defender)) {
+    def -= 6;
+    logs.push(`Back attack! Enemy ${defender.type} gets -6 defense`);
+  }
+
+  logs.push(`Your ${attacker.type} roll a ${atk}`);
+  logs.push(`Enemy ${defender.type} roll a ${def}`);
+
+  const killed = atk > def;
+  logs.push(killed ? `Your roll is higher. Enemy ${defender.type} dies` : `Enemy defends successfully`);
+
+  return { killed, logs };
+};

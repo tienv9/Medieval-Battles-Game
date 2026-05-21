@@ -1,5 +1,4 @@
 import React from "react";
-
 import arrow from "../icons/arrow.svg";
 import sword from "../icons/sword.svg";
 import spear from "../icons/spear.svg";
@@ -19,19 +18,12 @@ const rotationMap = {
   W: "270deg",
 };
 
-export default function Box({
-  unit,
-  currentPlayer,
-  onClick,
-  isMoveTarget,
-  isAttackTarget
-}) {
+export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAttackTarget, isSelected }) {
   const getColor = () => {
     if (!unit) return "white";
     if (unit.owner !== currentPlayer) return "white";
-
-    if (unit.moveLeft > 0) return "#4ade80"; 
-    if (!unit.hasAttacked) return "#facc15"; 
+    if (unit.moveLeft > 0) return "#4ade80";
+    if (!unit.hasAttacked) return "#facc15";
     return "#9ca3af";
   };
 
@@ -50,6 +42,17 @@ export default function Box({
         cursor: "pointer",
       }}
     >
+      {isSelected && (
+        <div
+          style={{
+            width: 10,
+            height: 10,
+            backgroundColor: "purple",
+            borderRadius: "50%",
+            position: "absolute",
+          }}
+        />
+      )}
       {isMoveTarget && (
         <div
           style={{
@@ -61,7 +64,6 @@ export default function Box({
           }}
         />
       )}
-
       {isAttackTarget && (
         <div
           style={{
@@ -74,7 +76,6 @@ export default function Box({
           }}
         />
       )}
-
       {unit && (
         <img
           src={iconMap[unit.type]}

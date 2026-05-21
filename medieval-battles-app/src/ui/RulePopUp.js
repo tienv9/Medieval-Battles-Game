@@ -10,7 +10,7 @@ export default function RulePopUp({ open, onClose }) {
         top: 60,
         right: 20,
         width: 320,
-        backgroundColor: "#facc15", // yellow
+        backgroundColor: "#facc15",
         color: "#111",
         padding: 15,
         borderRadius: 10,
@@ -27,7 +27,6 @@ export default function RulePopUp({ open, onClose }) {
         }}
       >
         <strong>Rules</strong>
-
         <button
           onClick={onClose}
           style={{
@@ -41,7 +40,6 @@ export default function RulePopUp({ open, onClose }) {
           ✕
         </button>
       </div>
-
       <div style={{ fontSize: 12, lineHeight: 1.5 }}>
         <p>• Move by selecting a unit and clicking a tile</p>
         <p>• Attack uses dice roll comparison</p>
