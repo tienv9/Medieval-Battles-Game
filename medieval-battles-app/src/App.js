@@ -3,6 +3,7 @@ import Board from "./ui/GameBoard";
 import ControlPanel from "./ui/ControlPanel";
 import CombatLog from "./ui/CombatLog";
 import RulePopUp from "./ui/RulePopUp";
+import WinPopUp from "./ui/WinPopUp";
 import { createUnits } from "./engine/setupUnits";
 import { resolveCombat } from "./utils/CombatUtils";
 import { rotateClockwise } from "./utils/directions";
@@ -14,6 +15,7 @@ export default function App() {
   const [attackMode, setAttackMode] = useState(false);
   const [combatLog, setCombatLog] = useState([]);
   const [showRules, setShowRules] = useState(false);
+  const [winner, setWinner] = useState(null);
 
   const currentPlayer = turn % 2;
   const getUnit = (x, y) => units.find((u) => u.x === x && u.y === y);
@@ -44,7 +46,13 @@ export default function App() {
       if (unit && unit.owner !== currentPlayer) {
         const { killed, logs } = resolveCombat(selectedUnit, unit);
         setCombatLog(logs);
-        if (killed) setUnits((prev) => prev.filter((u) => u.id !== unit.id));
+        if (killed) {
+          const remaining = units.filter((u) => u.id !== unit.id);
+          setUnits(remaining);
+          if (!remaining.some((u) => u.owner === unit.owner)) {
+            setWinner(currentPlayer);
+          }
+        }
       } else {
         setCombatLog([]);
       }
@@ -135,8 +143,27 @@ export default function App() {
           onShowRules={() => setShowRules(true)}
         />
       </div>
+      <button
+        onClick={() => setWinner(currentPlayer)}
+        style={{
+          position: "fixed",
+          bottom: 10,
+          left: 10,
+          padding: "6px 10px",
+          backgroundColor: "#374151",
+          color: "white",
+          border: "none",
+          borderRadius: 6,
+          cursor: "pointer",
+          fontSize: 11,
+          opacity: 0.6,
+        }}
+      >
+        Test Win
+      </button>
       <CombatLog logs={combatLog} />
       <RulePopUp open={showRules} onClose={() => setShowRules(false)} />
+      <WinPopUp winner={winner} />
     </div>
   );
 }
