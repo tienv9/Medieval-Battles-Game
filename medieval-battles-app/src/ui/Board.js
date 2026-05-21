@@ -34,7 +34,8 @@ export default function Board({ units, selected, currentPlayer, attackMode, onCe
         const dx = Math.abs(sel.x - x);
         const dy = Math.abs(sel.y - y);
         const dist = dx + dy;
-        if (dist > 0 && dist <= sel.stats.range) {
+        const unitOnTile = getUnit(x, y);
+        if (dist > 0 && dist <= sel.stats.range && (!unitOnTile || unitOnTile.owner !== sel.owner)) {
           tiles.push({ x, y });
         }
       }

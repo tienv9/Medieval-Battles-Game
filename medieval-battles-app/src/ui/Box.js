@@ -45,9 +45,9 @@ export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAtta
       {isSelected && (
         <div
           style={{
-            width: 10,
-            height: 10,
-            backgroundColor: "purple",
+            width: 20,
+            height: 20,
+            backgroundColor: "#ff03f7" ,
             borderRadius: "50%",
             position: "absolute",
           }}
