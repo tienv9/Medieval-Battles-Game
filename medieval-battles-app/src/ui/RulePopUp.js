@@ -50,6 +50,7 @@ export default function RulePopUp({ open, onClose }) {
         <p>• Swordsmen {">"} Cavalry (+1)</p>
         <p>• Swordsmen {">"} Archers (+1)</p>
         <p>• Attack toggles movement lock</p>
+        <p>• Archers must reload after attacking (skip 1 turn)</p>
       </div>
     </div>
   );

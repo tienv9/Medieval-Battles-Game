@@ -3,6 +3,7 @@ import arrow from "../icons/arrow.svg";
 import sword from "../icons/sword.svg";
 import spear from "../icons/spear.svg";
 import horse from "../icons/horse.svg";
+import reload from "../icons/reload.svg";
 
 const iconMap = {
   archer: arrow,
@@ -77,16 +78,31 @@ export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAtta
         />
       )}
       {unit && (
-        <img
-          src={iconMap[unit.type]}
-          alt={unit.type}
-          style={{
-            width: "70%",
-            height: "70%",
-            objectFit: "contain",
-            transform: `rotate(${rotationMap[unit.facing]})`,
-          }}
-        />
+        <>
+          <img
+            src={iconMap[unit.type]}
+            alt={unit.type}
+            style={{
+              width: "70%",
+              height: "70%",
+              objectFit: "contain",
+              transform: `rotate(${rotationMap[unit.facing]})`,
+            }}
+          />
+          {unit.reloadTurnsLeft > 0 && (
+            <img
+              src={reload}
+              alt="reloading"
+              style={{
+                position: "absolute",
+                width: "55%",
+                height: "55%",
+                objectFit: "contain",
+                opacity: 0.85,
+              }}
+            />
+          )}
+        </>
       )}
     </div>
   );

@@ -8,6 +8,17 @@ export class Unit extends UnitBase {
     this.type = type;
     this.stats = UNIT_TYPES[type];
     this.moveLeft = this.stats.move;
+    this.reloadTurnsLeft = 0;
+  }
+
+  resetTurn() {
+    if (this.reloadTurnsLeft > 0) {
+      this.reloadTurnsLeft--;
+      this.hasAttacked = true;
+      this.moveLeft = 0;
+    } else {
+      super.resetTurn();
+    }
   }
 
   canMove(distance) {
@@ -20,5 +31,8 @@ export class Unit extends UnitBase {
 
   attack() {
     this.hasAttacked = true;
+    if (this.type === "archer") {
+      this.reloadTurnsLeft = 2;
+    }
   }
 }
