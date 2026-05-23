@@ -1,5 +1,7 @@
 import React from "react";
 import { Button, Stack, Text, Paper, Divider, Badge, Group, useMantineColorScheme } from "@mantine/core";
+import sun from "../icons/sun.svg";
+import moon from "../icons/moon.svg";
 
 export default function ControlPanel({
   selectedUnit,
@@ -78,6 +80,9 @@ export default function ControlPanel({
           variant="subtle"
           color="gray"
           size="xs"
+          leftSection={
+            <img src={isDark ? sun : moon} alt="" style={{ width: 14, height: 14 }} />
+          }
         >
           {isDark ? "Light Mode" : "Dark Mode"}
         </Button>
