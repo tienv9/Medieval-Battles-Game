@@ -6,7 +6,7 @@ import CombatLog from "./ui/CombatLog";
 import RulePopUp from "./ui/RulePopUp";
 import WinPopUp from "./ui/WinPopUp";
 import { createUnits } from "./engine/setupUnits";
-import { resolveCombat } from "./utils/CombatUtils";
+import { resolveCombat, isInFront } from "./utils/CombatUtils";
 import { rotateClockwise } from "./utils/directions";
 
 export default function App() {
@@ -43,6 +43,7 @@ export default function App() {
 
       const dist = Math.abs(selectedUnit.x - x) + Math.abs(selectedUnit.y - y);
       if (dist > selectedUnit.stats.range) return;
+      if (!isInFront(selectedUnit, { x, y })) return;
 
       if (unit && unit.owner !== currentPlayer) {
         const { killed, logs } = resolveCombat(selectedUnit, unit);

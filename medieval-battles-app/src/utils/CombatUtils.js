@@ -22,6 +22,16 @@ export const isBehindAttack = (attacker, defender) => {
   }
 };
 
+export const isInFront = (attacker, target) => {
+  switch (attacker.facing) {
+    case "N": return target.y < attacker.y;
+    case "S": return target.y > attacker.y;
+    case "E": return target.x > attacker.x;
+    case "W": return target.x < attacker.x;
+    default:  return false;
+  }
+};
+
 // Returns 'front', 'side', or 'rear' based on where the attacker is relative
 // to the defender's facing. Side = attacker is on the perpendicular axis.
 export const getFlankType = (attacker, defender) => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Paper } from "@mantine/core";
 import Box from "./Box";
+import { isInFront } from "../utils/CombatUtils";
 
 const SIZE = 10;
 
@@ -36,7 +37,7 @@ export default function Board({ units, selected, currentPlayer, attackMode, onCe
         const dy = Math.abs(sel.y - y);
         const dist = dx + dy;
         const unitOnTile = getUnit(x, y);
-        if (dist > 0 && dist <= sel.stats.range && (!unitOnTile || unitOnTile.owner !== sel.owner)) {
+        if (dist > 0 && dist <= sel.stats.range && isInFront(sel, { x, y }) && (!unitOnTile || unitOnTile.owner !== sel.owner)) {
           tiles.push({ x, y });
         }
       }

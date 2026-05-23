@@ -1,4 +1,4 @@
-import { roll, getCombatBonus, isBehindAttack, getFlankType, resolveCombat } from '../utils/CombatUtils';
+import { roll, getCombatBonus, isBehindAttack, getFlankType, isInFront, resolveCombat } from '../utils/CombatUtils';
 
 const makeUnit = (overrides) => ({
   type: 'swordsman',
@@ -66,6 +66,25 @@ describe('isBehindAttack', () => {
 
   test('attacker on same tile returns false', () => {
     expect(isBehindAttack(makeUnit({ x: 5, y: 5 }), { ...defender, facing: 'N' })).toBe(false);
+  });
+});
+
+describe('isInFront', () => {
+  const atk = { x: 5, y: 5 };
+
+  test.each([
+    ['N', 5, 3, true],
+    ['N', 5, 7, false],
+    ['N', 3, 5, false],
+    ['S', 5, 7, true],
+    ['S', 5, 3, false],
+    ['E', 7, 5, true],
+    ['E', 3, 5, false],
+    ['E', 5, 3, false],
+    ['W', 3, 5, true],
+    ['W', 7, 5, false],
+  ])('facing %s, target (%d,%d) → %s', (facing, tx, ty, expected) => {
+    expect(isInFront({ ...atk, facing }, { x: tx, y: ty })).toBe(expected);
   });
 });
 
