@@ -8,6 +8,10 @@ body {
   background-color: #1a1a2e;
 }
 
+html[data-mantine-color-scheme="light"] body {
+  background-color: #e9ecef;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

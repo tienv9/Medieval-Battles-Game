@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Stack, Text, Paper, Divider, Badge, Group } from "@mantine/core";
+import { Button, Stack, Text, Paper, Divider, Badge, Group, useMantineColorScheme } from "@mantine/core";
 
 export default function ControlPanel({
   selectedUnit,
@@ -13,9 +13,11 @@ export default function ControlPanel({
   onShowRules,
 }) {
   const unitExhausted = selectedUnit && selectedUnit.moveLeft === 0 && selectedUnit.hasAttacked;
+  const { colorScheme, setColorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === "dark";
 
   return (
-    <Paper shadow="sm" p="md" w={190} withBorder style={{ backgroundColor: "#d1d5db" }}>
+    <Paper shadow="sm" p="md" w={190} withBorder style={{ backgroundColor: isDark ? "#2c2e33" : "#d1d5db" }}>
       <Stack gap="sm">
         <Text fw={700} size="lg" ta="center">Medieval Battles</Text>
 
@@ -68,6 +70,16 @@ export default function ControlPanel({
 
         <Button fullWidth onClick={onShowRules} color="yellow" variant="light" size="xs">
           Rules
+        </Button>
+
+        <Button
+          fullWidth
+          onClick={() => setColorScheme(isDark ? "light" : "dark")}
+          variant="subtle"
+          color="gray"
+          size="xs"
+        >
+          {isDark ? "Light Mode" : "Dark Mode"}
         </Button>
       </Stack>
     </Paper>
