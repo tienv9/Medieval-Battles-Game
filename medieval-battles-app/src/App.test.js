@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import App from './App';
@@ -36,7 +36,7 @@ describe('App smoke tests', () => {
   test('Win button triggers win popup', async () => {
     renderApp();
     userEvent.click(screen.getByText('Test Win'));
-    await waitFor(() => expect(screen.getByText('Player 1 Wins!')).toBeInTheDocument());
+    expect(await screen.findByText('Player 1 Wins!')).toBeInTheDocument();
     expect(screen.getByText('Play Again')).toBeInTheDocument();
   });
 });
