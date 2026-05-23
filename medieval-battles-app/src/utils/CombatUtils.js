@@ -22,6 +22,31 @@ export const isBehindAttack = (attacker, defender) => {
   }
 };
 
+// Returns 'front', 'side', or 'rear' based on where the attacker is relative
+// to the defender's facing. Side = attacker is on the perpendicular axis.
+export const getFlankType = (attacker, defender) => {
+  switch (defender.facing) {
+    case "N":
+      if (attacker.y < defender.y) return "front";
+      if (attacker.y > defender.y) return "rear";
+      return "side";
+    case "S":
+      if (attacker.y > defender.y) return "front";
+      if (attacker.y < defender.y) return "rear";
+      return "side";
+    case "E":
+      if (attacker.x > defender.x) return "front";
+      if (attacker.x < defender.x) return "rear";
+      return "side";
+    case "W":
+      if (attacker.x < defender.x) return "front";
+      if (attacker.x > defender.x) return "rear";
+      return "side";
+    default:
+      return "front";
+  }
+};
+
 export const resolveCombat = (attacker, defender) => {
   const logs = [];
   let atk = roll();
@@ -45,9 +70,13 @@ export const resolveCombat = (attacker, defender) => {
     logs.push(`${defender.type} combat modifier: ${defBonus > 0 ? "+" : ""}${defBonus}`);
   }
 
-  if (isBehindAttack(attacker, defender)) {
+  const flankType = getFlankType(attacker, defender);
+  if (flankType === "rear") {
     def -= 6;
     logs.push(`Back attack! Enemy ${defender.type} gets -6 defense`);
+  } else if (flankType === "side") {
+    def -= 3;
+    logs.push(`Side attack! Enemy ${defender.type} gets -3 defense`);
   }
 
   logs.push(`Your ${attacker.type} roll a ${atk}`);

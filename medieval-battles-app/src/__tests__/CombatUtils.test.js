@@ -1,4 +1,4 @@
-import { roll, getCombatBonus, isBehindAttack, resolveCombat } from '../utils/CombatUtils';
+import { roll, getCombatBonus, isBehindAttack, getFlankType, resolveCombat } from '../utils/CombatUtils';
 
 const makeUnit = (overrides) => ({
   type: 'swordsman',
@@ -69,6 +69,28 @@ describe('isBehindAttack', () => {
   });
 });
 
+describe('getFlankType', () => {
+  const defender = makeUnit({ x: 5, y: 5 });
+
+  test.each([
+    ['N', 5, 3, 'front'],
+    ['N', 5, 7, 'rear'],
+    ['N', 3, 5, 'side'],
+    ['N', 7, 5, 'side'],
+    ['S', 5, 7, 'front'],
+    ['S', 5, 3, 'rear'],
+    ['S', 3, 5, 'side'],
+    ['E', 7, 5, 'front'],
+    ['E', 3, 5, 'rear'],
+    ['E', 5, 3, 'side'],
+    ['W', 3, 5, 'front'],
+    ['W', 7, 5, 'rear'],
+    ['W', 5, 7, 'side'],
+  ])('facing %s, attacker (%d,%d) → %s', (facing, ax, ay, expected) => {
+    expect(getFlankType(makeUnit({ x: ax, y: ay }), { ...defender, facing })).toBe(expected);
+  });
+});
+
 describe('resolveCombat', () => {
   afterEach(() => jest.restoreAllMocks());
 
@@ -92,8 +114,8 @@ describe('resolveCombat', () => {
   test('defender survives when rolls are equal', () => {
     mockRolls(3, 3);
     const { killed } = resolveCombat(
-      makeUnit({ type: 'swordsman' }),
-      makeUnit({ type: 'swordsman', facing: 'N' }),
+      makeUnit({ type: 'swordsman', x: 5, y: 3 }), // north of N-facing defender (frontal)
+      makeUnit({ type: 'swordsman', x: 5, y: 5, facing: 'N' }),
     );
     expect(killed).toBe(false);
   });
@@ -112,8 +134,8 @@ describe('resolveCombat', () => {
     // atk 1, def 6 — no penalty; defender survives
     mockRolls(1, 6);
     const { killed } = resolveCombat(
-      makeUnit({ type: 'archer' }),
-      makeUnit({ type: 'archer', facing: 'N' }),
+      makeUnit({ type: 'archer', x: 5, y: 3 }), // frontal
+      makeUnit({ type: 'archer', x: 5, y: 5, facing: 'N' }),
     );
     expect(killed).toBe(false);
   });
@@ -122,7 +144,17 @@ describe('resolveCombat', () => {
     // atk 1, def 6 → after -6 back penalty def = 0, atk wins
     mockRolls(1, 6);
     const { killed } = resolveCombat(
-      makeUnit({ type: 'swordsman', x: 5, y: 7 }), // south of defender
+      makeUnit({ type: 'swordsman', x: 5, y: 7 }), // south of N-facing defender
+      makeUnit({ type: 'swordsman', x: 5, y: 5, facing: 'N' }),
+    );
+    expect(killed).toBe(true);
+  });
+
+  test('side attack applies -3 to defender', () => {
+    // atk 4, def 6 → after -3 side penalty def = 3, atk wins
+    mockRolls(4, 6);
+    const { killed } = resolveCombat(
+      makeUnit({ type: 'swordsman', x: 7, y: 5 }), // east of N-facing defender (side)
       makeUnit({ type: 'swordsman', x: 5, y: 5, facing: 'N' }),
     );
     expect(killed).toBe(true);
