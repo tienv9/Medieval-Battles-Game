@@ -7,21 +7,20 @@ export default function CombatLog({ logs }) {
       shadow="md"
       p="sm"
       w={230}
-      withBorder
-      style={{ position: "fixed", bottom: 16, right: 16 }}
+      style={{ position: "fixed", bottom: 16, right: 16, backgroundColor: "#000" }}
     >
-      <Text fw={700} size="sm" mb={6}>
+      <Text fw={700} size="sm" mb={6} c="#d1d5db">
         Combat Log
       </Text>
       <ScrollArea h={90}>
         <Stack gap={2}>
           {logs.length === 0 ? (
-            <Text c="dimmed" size="xs">
+            <Text c="#6b7280" size="xs">
               No actions yet
             </Text>
           ) : (
             logs.map((line, i) => (
-              <Text key={i} size="xs">
+              <Text key={i} size="xs" c="#d1d5db">
                 {line}
               </Text>
             ))

@@ -15,7 +15,7 @@ export default function ControlPanel({
   const unitExhausted = selectedUnit && selectedUnit.moveLeft === 0 && selectedUnit.hasAttacked;
 
   return (
-    <Paper shadow="sm" p="md" w={190} withBorder>
+    <Paper shadow="sm" p="md" w={190} withBorder style={{ backgroundColor: "#d1d5db" }}>
       <Stack gap="sm">
         <Text fw={700} size="lg" ta="center">Medieval Battles</Text>
 

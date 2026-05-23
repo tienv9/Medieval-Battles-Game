@@ -21,8 +21,8 @@ const rotationMap = {
 
 export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAttackTarget, isSelected }) {
   const getColor = () => {
-    if (!unit) return "#f8f9fa";
-    if (unit.owner !== currentPlayer) return "#f8f9fa";
+    if (!unit) return "#d1d5db";
+    if (unit.owner !== currentPlayer) return "#d1d5db";
     if (unit.moveLeft > 0) return "#4ade80";
     if (!unit.hasAttacked) return "#facc15";
     return "#adb5bd";
