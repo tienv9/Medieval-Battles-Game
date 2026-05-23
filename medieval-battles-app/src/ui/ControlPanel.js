@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, Stack, Text, Paper, Divider, Badge, Group } from "@mantine/core";
 
 export default function ControlPanel({
   selectedUnit,
@@ -14,54 +15,61 @@ export default function ControlPanel({
   const unitExhausted = selectedUnit && selectedUnit.moveLeft === 0 && selectedUnit.hasAttacked;
 
   return (
-    <div>
-      <button
-        onClick={onShowRules}
-        style={{
-          position: "fixed",
-          top: 10,
-          right: 10,
-          padding: "8px 12px",
-          backgroundColor: "#facc15",
-          border: "none",
-          borderRadius: 6,
-          cursor: "pointer",
-          fontWeight: "bold",
-          zIndex: 10000,
-        }}
-      >
-        Rules
-      </button>
+    <Paper shadow="sm" p="md" w={190} withBorder>
+      <Stack gap="sm">
+        <Text fw={700} size="lg" ta="center">Medieval Battles</Text>
 
-      <button onClick={onEndTurn}>End Turn</button>
+        <Group justify="center" gap="xs">
+          <Badge color="blue" variant="light">Turn {turn + 1}</Badge>
+          <Badge color={currentPlayer === 0 ? "teal" : "red"} variant="light">
+            Player {currentPlayer + 1}
+          </Badge>
+        </Group>
 
-      <br />
-      <br />
+        <Divider />
 
-      <button disabled={!selectedUnit} onClick={onRotate}>
-        Rotate
-      </button>
+        <Button fullWidth onClick={onEndTurn} color="blue" size="sm">
+          End Turn
+        </Button>
 
-      <br />
-      <br />
+        <Button
+          fullWidth
+          disabled={!selectedUnit}
+          onClick={onRotate}
+          variant="outline"
+          color="gray"
+          size="sm"
+        >
+          Rotate
+        </Button>
 
-      <button
-        disabled={!selectedUnit || (selectedUnit && selectedUnit.hasAttacked)}
-        onClick={onToggleAttack}
-      >
-        {attackMode ? "Cancel Attack" : "Attack"}
-      </button>
+        <Button
+          fullWidth
+          disabled={!selectedUnit || !!(selectedUnit && selectedUnit.hasAttacked)}
+          onClick={onToggleAttack}
+          color={attackMode ? "red" : "orange"}
+          size="sm"
+        >
+          {attackMode ? "Cancel Attack" : "Attack"}
+        </Button>
 
-      <br />
-      <br />
+        <Button
+          fullWidth
+          disabled={!selectedUnit || !!unitExhausted}
+          onClick={onEndUnitTurn}
+          variant="light"
+          color="gray"
+          size="sm"
+        >
+          End Unit Turn
+        </Button>
 
-      <button disabled={!selectedUnit || unitExhausted} onClick={onEndUnitTurn}>
-        End Unit Turn
-      </button>
+        <Divider />
 
-      <p>
-        Turn: {turn} | Player {currentPlayer}
-      </p>
-    </div>
+        <Button fullWidth onClick={onShowRules} color="yellow" variant="light" size="xs">
+          Rules
+        </Button>
+      </Stack>
+    </Paper>
   );
 }

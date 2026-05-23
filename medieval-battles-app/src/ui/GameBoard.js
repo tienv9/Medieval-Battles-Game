@@ -1,4 +1,5 @@
 import React from "react";
+import { Paper } from "@mantine/core";
 import Box from "./Box";
 
 const SIZE = 10;
@@ -47,8 +48,8 @@ export default function Board({ units, selected, currentPlayer, attackMode, onCe
   const attackTiles = getAttackTiles();
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${SIZE}, 40px)` }}>
+    <Paper shadow="md" withBorder p={4} style={{ display: "inline-block" }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${SIZE}, 44px)` }}>
         {Array.from({ length: SIZE }).map((_, y) =>
           Array.from({ length: SIZE }).map((_, x) => {
             const unit = getUnit(x, y);
@@ -66,6 +67,6 @@ export default function Board({ units, selected, currentPlayer, attackMode, onCe
           })
         )}
       </div>
-    </div>
+    </Paper>
   );
 }

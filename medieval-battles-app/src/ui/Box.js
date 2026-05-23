@@ -21,26 +21,27 @@ const rotationMap = {
 
 export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAttackTarget, isSelected }) {
   const getColor = () => {
-    if (!unit) return "white";
-    if (unit.owner !== currentPlayer) return "white";
+    if (!unit) return "#f8f9fa";
+    if (unit.owner !== currentPlayer) return "#f8f9fa";
     if (unit.moveLeft > 0) return "#4ade80";
     if (!unit.hasAttacked) return "#facc15";
-    return "#9ca3af";
+    return "#adb5bd";
   };
 
   return (
     <div
       onClick={onClick}
       style={{
-        width: 40,
-        height: 40,
-        border: "1px solid black",
+        width: 44,
+        height: 44,
+        border: "1px solid #dee2e6",
         backgroundColor: getColor(),
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
         cursor: "pointer",
+        boxSizing: "border-box",
       }}
     >
       {isSelected && (
@@ -48,9 +49,10 @@ export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAtta
           style={{
             width: 20,
             height: 20,
-            backgroundColor: "#ff03f7" ,
+            backgroundColor: "#cc5de8",
             borderRadius: "50%",
             position: "absolute",
+            opacity: 0.85,
           }}
         />
       )}
@@ -59,7 +61,7 @@ export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAtta
           style={{
             width: 10,
             height: 10,
-            backgroundColor: "green",
+            backgroundColor: "#2f9e44",
             borderRadius: "50%",
             position: "absolute",
           }}
@@ -70,10 +72,10 @@ export default function Box({ unit, currentPlayer, onClick, isMoveTarget, isAtta
           style={{
             width: 12,
             height: 12,
-            backgroundColor: "red",
+            backgroundColor: "#e03131",
             borderRadius: "50%",
             position: "absolute",
-            opacity: 0.7,
+            opacity: 0.75,
           }}
         />
       )}

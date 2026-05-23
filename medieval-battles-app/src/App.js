@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Center, Group } from "@mantine/core";
 import Board from "./ui/GameBoard";
 import ControlPanel from "./ui/ControlPanel";
 import CombatLog from "./ui/CombatLog";
@@ -114,16 +115,8 @@ export default function App() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        width: "100vw",
-      }}
-    >
-      <div style={{ display: "flex", gap: 20, padding: 20 }}>
+    <Center mih="100vh">
+      <Group align="flex-start" gap="xl" p="xl">
         <Board
           units={units}
           selected={selected}
@@ -142,7 +135,8 @@ export default function App() {
           onEndUnitTurn={handleEndUnitTurn}
           onShowRules={() => setShowRules(true)}
         />
-      </div>
+      </Group>
+
       <button
         onClick={() => setWinner(currentPlayer)}
         style={{
@@ -161,9 +155,10 @@ export default function App() {
       >
         Test Win
       </button>
+
       <CombatLog logs={combatLog} />
       <RulePopUp open={showRules} onClose={() => setShowRules(false)} />
       <WinPopUp winner={winner} />
-    </div>
+    </Center>
   );
 }

@@ -1,30 +1,33 @@
 import React from "react";
+import { Paper, Text, Stack, ScrollArea } from "@mantine/core";
 
 export default function CombatLog({ logs }) {
   return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 10,
-        right: 10,
-        width: 220,
-        minHeight: 80,
-        backgroundColor: "#111",
-        color: "white",
-        padding: 10,
-        borderRadius: 8,
-        fontSize: 12,
-        boxShadow: "0 0 10px rgba(0,0,0,0.5)",
-      }}
+    <Paper
+      shadow="md"
+      p="sm"
+      w={230}
+      withBorder
+      style={{ position: "fixed", bottom: 16, right: 16 }}
     >
-      <strong>Combat Log</strong>
-      <div style={{ marginTop: 5 }}>
-        {logs.length === 0 ? (
-          <div>No actions yet</div>
-        ) : (
-          logs.map((line, i) => <div key={i}>{line}</div>)
-        )}
-      </div>
-    </div>
+      <Text fw={700} size="sm" mb={6}>
+        Combat Log
+      </Text>
+      <ScrollArea h={90}>
+        <Stack gap={2}>
+          {logs.length === 0 ? (
+            <Text c="dimmed" size="xs">
+              No actions yet
+            </Text>
+          ) : (
+            logs.map((line, i) => (
+              <Text key={i} size="xs">
+                {line}
+              </Text>
+            ))
+          )}
+        </Stack>
+      </ScrollArea>
+    </Paper>
   );
 }
