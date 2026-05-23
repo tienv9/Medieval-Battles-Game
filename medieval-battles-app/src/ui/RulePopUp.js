@@ -34,7 +34,7 @@ export default function RulePopUp({ open, onClose }) {
             <List.Item><Text span fw={500}>Spearmen</Text> — strong vs Cavalry (+2 attack)</List.Item>
             <List.Item><Text span fw={500}>Swordsmen</Text> — strong vs Spearmen (+2), Cavalry (+1), and Archers (+1)</List.Item>
             <List.Item><Text span fw={500}>Cavalry</Text> — fast movers (4 tiles), weak vs Spearmen</List.Item>
-            <List.Item><Text span fw={500}>Archers</Text> — long range (5 tiles), but take -6 defense when attacked by any non-archer. Must reload for 2 turns after firing.</List.Item>
+            <List.Item><Text span fw={500}>Archers</Text> — long range (5 tiles), but take -6 defense when attacked by any non-archer. Must spend 1 entire turn reloading after firing.</List.Item>
           </List>
         </Stack>
 
